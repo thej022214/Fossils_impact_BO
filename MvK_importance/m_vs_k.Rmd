@@ -1,0 +1,169 @@
+---
+title: "M vs K"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r code, cache=TRUE, echo=FALSE}
+library(tidyverse)
+library(Metrics)
+library(MuMIn)
+library(geiger)
+library(phangorn)
+library(TreeSim)
+
+GetEdgeCombined <- function(phy) {
+  edge_combined <- as.data.frame(cbind(phy$edge, phy$edge.length))
+  extinct_taxa <- geiger::is.extinct(phy)
+  extinct_taxa_indices <- which((phy$tip.label %in% extinct_taxa))
+  living_taxa_indices <- which(!(phy$tip.label %in% extinct_taxa))
+  edge_combined$livingdescendants <- FALSE
+  edge_combined$livingdescendants[edge_combined[,2] %in% living_taxa_indices] <- TRUE
+  for (i in seq_along(living_taxa_indices)) {
+    ancestral_nodes <- phangorn::Ancestors(phy, node=living_taxa_indices[i])
+    edge_combined$livingdescendants[edge_combined[,2] %in% ancestral_nodes] <- TRUE
+  }
+  if(length(living_taxa_indices)>0) {
+    edge_combined$livingdescendants[edge_combined[,1]==max(edge_combined[,1])] <- TRUE
+  }
+  edge_combined <- cbind(edge_combined, phytools::nodeHeights(phy))
+  colnames(edge_combined) <- c("rootwardnode", "tipwardnode", "edge.length",  "livingdescendants", "rootwardheight", "tipwardheight")
+  edge_combined$istip <- FALSE
+  edge_combined$istip[edge_combined[,2] <= ape::Ntip(phy)] <- TRUE
+  return(edge_combined)
+}
+
+GetFossils <- function(phy, psi=0.1, edge_combined=NULL) {
+  if(is.null(edge_combined)) {
+    edge_combined <- GetEdgeCombined(phy)
+  }
+  maxheight = max(edge_combined$tipwardheight)
+  fossils <- as.data.frame(matrix(ncol=9, nrow=0))
+  colnames(fossils) <- c("rootwardnode", "tipwardnode", "timefromroot", "timefromrootwardnode", "timefrompresent", "fossiltype_short", "fossiltype_long", "order_on_branch", "has_sampled_descendant")
+  for(i in sequence(nrow(edge_combined))) {
+    total_time <- edge_combined$edge.length[i]
+    starting_time <- edge_combined$rootwardheight[i]
+    elapsed_time <- rexp(1, rate=psi)
+    order_on_branch <- 1
+    while(elapsed_time < total_time) {
+      fossiltype_long <- paste0(ifelse(edge_combined$livingdescendants[i], "surviving_", "extinct_"), ifelse(edge_combined$istip[i], "terminal", "internal"))
+      fossils <- rbind(fossils, data.frame(rootwardnode=edge_combined$rootwardnode[i], tipwardnode=edge_combined$tipwardnode[i], timefromroot=elapsed_time+starting_time, timefromrootwardnode=elapsed_time, timefrompresent=maxheight-(elapsed_time+starting_time), fossiltype_short=ifelse(edge_combined$livingdescendants[i], "from_surviving_lineage", "from_extinct"), fossiltype_long=fossiltype_long, order_on_branch=order_on_branch))
+      elapsed_time <- elapsed_time + rexp(1, rate=psi)
+      order_on_branch <- order_on_branch + 1
+    }
+  }
+  fossils$has_sampled_descendant <- FALSE
+  fossils$has_sampled_descendant[fossils$fossiltype_short=="from_surviving_lineage"] <- TRUE
+  fossils <- fossils[order(fossils$tipwardnode, fossils$order_on_branch, decreasing=TRUE),]
+  fossils$has_sampled_descendant[duplicated(fossils$tipwardnode)] <- TRUE
+  fossils <- fossils[order(fossils$timefrompresent),]
+  return(fossils)
+}
+
+GetSummary <- function(ntip, true.mu, true.lambda, true.psi) {
+  phy <- TreeSim::sim.bd.taxa(n = ntip, numbsim = 1, lambda = true.lambda, mu = true.mu)[[1]]
+  fossils <- hisse:::GetFossils(phy, psi=true.psi)
+  types <- as.data.frame(table(fossils$fossiltype_long))
+  types.vector <- types$Freq
+  names(types.vector) <- types$Var1
+  local_results <- cbind(data.frame(mu=true.mu, lambda=true.lambda, psi=true.psi, ntip=ntip, stringsAsFactors = FALSE), as.data.frame(t(types.vector)))
+  return(local_results)
+}
+
+```
+
+
+```{r data, cache=TRUE}
+results <- data.frame()
+true.lambda.vector <- c(0.3, 0.4, 0.5)
+true.mu.vector <- c( 0.2, 0.1, 0)
+true.psi.vector <- c(0.005, 0.01, 0.02, 0.04)
+ntip.vector=c(50, 100, 200, 500)
+nrep <- 20
+for(ntip_index in seq_along(ntip.vector)) {
+  for (lambda_index in seq_along(true.lambda.vector)) {
+    for (mu_index in seq_along(true.mu.vector)) {
+      for (psi_index in seq_along(true.psi.vector)) {
+        true.mu <- true.mu.vector[mu_index]
+        true.psi <- true.psi.vector[psi_index]
+        true.lambda <- true.lambda.vector[lambda_index]
+        ntip <- ntip.vector[ntip_index]
+        for (rep_index in sequence(nrep)) {
+          local_results <- data.frame()
+          try(local_results <- GetSummary(ntip, true.mu, true.lambda, true.psi))
+          if(nrow(local_results)>0) {
+            results <- plyr::rbind.fill(results, local_results)
+            #print(tail(results,1))
+          }
+        }
+      }
+    }
+  }
+}
+results[is.na(results)] <- 0
+results$m <- results$extinct_terminal
+results$k <- results$extinct_internal + results$surviving_internal + results$surviving_terminal
+results$turnover <- results$mu+results$lambda
+results$ef <- results$mu/results$lambda
+results$netdiv <- results$lambda - results$mu
+write.csv(results, file="m_vs_k.csv")
+```
+
+
+## m 
+
+```{r summary_m}
+
+options(na.action = "na.fail")
+m_global <- glm(m ~ mu + lambda + psi + ntip +  mu*psi + lambda*psi + ntip*psi, data=results, family=poisson)
+m_dredge <- MuMIn::dredge(m_global)
+MuMIn::importance(m_dredge)
+
+# best model
+summary(MuMIn::get.models(m_dredge, 1)[[1]])
+
+# model average
+MuMIn::model.avg(m_dredge, subset = cumsum(weight) <= .95)
+plot(m_dredge)
+```
+
+
+## k 
+
+```{r summary_k}
+
+options(na.action = "na.fail")
+k_global <- glm(k ~ mu + lambda + psi + ntip +  mu*psi + lambda*psi + ntip*psi, data=results, family=poisson)
+k_dredge <- MuMIn::dredge(k_global)
+MuMIn::importance(k_dredge)
+
+# best model
+summary(MuMIn::get.models(k_dredge, 1)[[1]])
+
+# model average
+MuMIn::model.avg(k_dredge, subset = cumsum(weight) <= .95)
+plot(k_dredge)
+```
+
+## k/(m+k)
+
+```{r summary_k_proportion}
+
+results$k_proportion <- results$k / (results$m+results$k)
+
+options(na.action = "na.fail")
+k_proportion_global <- glm(k_proportion ~ mu + lambda + psi + ntip +  mu*psi + lambda*psi + ntip*psi, data=results, family=gaussian)
+k_proportion_dredge <- MuMIn::dredge(k_proportion_global)
+MuMIn::importance(k_proportion_dredge)
+
+# best model
+summary(MuMIn::get.models(k_proportion_dredge, 1)[[1]], subset = cumsum(weight) <= .95)
+
+# model average
+MuMIn::model.avg(k_proportion_dredge)
+plot(k_proportion_dredge)
+```
+
