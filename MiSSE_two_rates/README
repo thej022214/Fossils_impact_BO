@@ -1,0 +1,15 @@
+
+The following provides an explanation of each "scenario":
+
+Scenario1 = regime B (t_B=0.50) had a turnover rate that was 2x the rate of regime A (t_A=0.25); 
+	extinction fraction was set at 0.75 for both regimes.
+
+Scenario2 = regime B (t_B=0.50) had a turnover rate that was 2x the rate of regime A (t_A=0.25);
+	regime A had a lower extinction fraction (e_A=0.55) than regime B (e_B=0.75)
+
+Scenario3 = regime A and B had identical turnover rates (t_A=t_B=0.375) and extinction fractions 
+	(e_A=e_B=0.75)
+
+Scenario4 = This is the scenario described in detail in section "How Do Fossils Help in a World Where 
+	All Models are Simply Wrong?" found in the main text.
+
