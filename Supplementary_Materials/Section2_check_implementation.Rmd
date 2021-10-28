@@ -9,7 +9,9 @@ vignette: >
    \usepackage[utf8]{inputenc}
 ---
 
-The easiest way to check that the likelihoods calculated by `MiSSE()`, `hisse()`, and `MuHiSSE()` are correct is to take the likelihood calculated by `MiSSE()` and add this to the likelihood of a simple Markov transition model. As described in Caetano et al. (2018), an SSE model jointly maximizes the probability of the observed states at the tips *and* the observed tree, given the model. Thus, if the character is completely disassociated from the rate differences in the tree (with what we call a character independent model) then this test should work. 
+#Checking FBD likelihood
+
+A simple way to check that the likelihoods returned by `MiSSE()`, `hisse()`, and `MuHiSSE()` are correct is to take the likelihood calculated by `MiSSE()` and add this to the likelihood of a simple Markov transition model. As described in Caetano et al. (2018), an SSE model jointly maximizes the probability of the observed states at the tips *and* the observed tree, given the model. Thus, if the character is completely disassociated from the rate differences in the tree (with what we call a character independent model) then this test should work. 
 
 First step is load the following packages:
 
@@ -92,7 +94,6 @@ print(comparison)
 
 This confirms that the calculations are correct. I will show the same using `MuHiSSE()`:
 ```{r, eval=TRUE}
-library(diversitree)
 pars <- c(.1,  .15,  .2, .1,
          .03, .045, .06, 0.03,
          .05, .05, .00,
@@ -187,10 +188,124 @@ comparison <- identical(round(muhisse.full,3), round(tot.logL,3))
 print(comparison)
 ```
 
+#Checking branch calculations for FBD with stratigraphic ranges
+
+Here we will demonstrate that the additional branch calculations necessary to compute the likelihood of the FBD with stratigraphic ranges conforms to the analytical calculations provided by Stadler et al. (2018). The first, are edge segments that represents a stratigraphic range. As described in the main text, we modify $D_{i}(t)$ to remove the possibility of an unobserved speciation and subsequent extinction event within the interval given that the entire stratigraphic range records the duration of species on branches. The following example assumes tip stratigraphic range, starting at time 0 and ending at time 10:
+```{r, eval=TRUE}
+compE <- numeric(26)
+compD <- numeric(26)
+compD[1] <- 1
+    
+yini <- c(E0A = compE[1], E0B = compE[2], E0C = compE[3], E0D = compE[4], 
+          E0E = compE[5], E0F = compE[6], E0G = compE[7], E0H = compE[8], 
+          E0I = compE[9], E0J = compE[10], E0K = compE[11], E0L = compE[12], 
+          E0M = compE[13], E0N = compE[14], E0O = compE[15], E0P = compE[16], 
+          E0Q = compE[17], E0R = compE[18], E0S = compE[19], E0T = compE[20], 
+          E0U = compE[21], E0V = compE[22], E0W = compE[23], E0X = compE[24], 
+          E0Y = compE[25], E0Z = compE[26], D0A = compD[1], D0B = compD[2], 
+          D0C = compD[3], D0D = compD[4], D0E = compD[5], D0F = compD[6], 
+          D0G = compD[7], D0H = compD[8], D0I = compD[9], D0J = compD[10],
+          D0K = compD[11], D0L = compD[12], D0M = compD[13], D0N = compD[14], 
+          D0O = compD[15], D0P = compD[16], D0Q = compD[17], D0R = compD[18], 
+          D0S = compD[19], D0T = compD[20], D0U = compD[21], D0V = compD[22], 
+          D0W = compD[23], D0X = compD[24], D0Y = compD[25], D0Z = compD[26])
+    
+times=c(0, 10)
+    
+pars <- numeric(55)
+pars[55] <- 0.05
+pars[1] <- .2
+pars[2] <- .1
+pars[54] <- 1
+        
+stad.1 <- hisse:::q_sym_ratio(si=10, ei=0, lambda=.2, mu=.1, psi=0.05, rho=1)
+    
+## Now do same calculation using SingleChildCode
+rho = 1
+turnover = .2 + .1
+eps = .1 / .2
+psi = 0.05
+model.vec <- c(turnover, eps, rep(0,51))
+cache <- hisse:::ParametersToPassMiSSE(model.vec=model.vec, hidden.states=1, 
+      fixed.eps=NULL, nb.tip=1, nb.node=1, bad.likelihood=exp(-300), ode.eps=0)
+cache$psi <- psi
+strat.range.calc <- hisse:::SingleChildProbMiSSE(cache, pars, compD, 
+      compE,  0, 10, 3)
+comparison <- identical(round(unname(strat.range.calc[27]),4), round(stad.1,4))
+    
+print(comparison)
+```
+
+When an edge segment represents intervening time intervals between two stratigraphic ranges without an observed speciation events, we must account for the fact that there must have been at least one speciation event along this interval. In the following example, we assume the intervening interval occurs for the interval [10,12], but first we must calculate the branch probability for the interval [0,10]:
+```{r, eval=TRUE}
+
+compE <- numeric(26)
+compD <- numeric(26)
+compD[1] <- 1
+    
+yini <- c(E0A = compE[1], E0B = compE[2], E0C = compE[3], E0D = compE[4], 
+          E0E = compE[5], E0F = compE[6], E0G = compE[7], E0H = compE[8], 
+          E0I = compE[9], E0J = compE[10], E0K = compE[11], E0L = compE[12], 
+          E0M = compE[13], E0N = compE[14], E0O = compE[15], E0P = compE[16], 
+          E0Q = compE[17], E0R = compE[18], E0S = compE[19], E0T = compE[20], 
+          E0U = compE[21], E0V = compE[22], E0W = compE[23], E0X = compE[24], 
+          E0Y = compE[25], E0Z = compE[26], D0A = compD[1], D0B = compD[2], 
+          D0C = compD[3], D0D = compD[4], D0E = compD[5], D0F = compD[6], 
+          D0G = compD[7], D0H = compD[8], D0I = compD[9], D0J = compD[10], 
+          D0K = compD[11], D0L = compD[12], D0M = compD[13], D0N = compD[14], 
+          D0O = compD[15], D0P = compD[16], D0Q = compD[17], D0R = compD[18], 
+          D0S = compD[19], D0T = compD[20], D0U = compD[21], D0V = compD[22], 
+          D0W = compD[23], D0X = compD[24], D0Y = compD[25], D0Z = compD[26])
+    
+times=c(0, 10)
+    
+pars <- numeric(55)
+pars[55] <- 0.05
+pars[1] <- .2
+pars[2] <- .1
+pars[54] <- 1
+    
+stad.1 <- hisse:::q_sym_ratio(si=10, ei=0, lambda=.2, mu=.1, psi=0.05, rho=1)
+```
+
+Next we use the equation from Corollary 13 in Stadler et al. (2018) to account for at least one unobserved speciation event along this interval, which we then multiply the probability above:
+```{r, eval=TRUE}
+## Now test an intervening branch calculations using Stadler eqs:
+first.ratio <- hisse:::q_t(t=10, lambda=.2, mu=.1, psi=0.05, rho=1) / 
+      hisse:::q_sym_tilde(t=10,lambda=.2, mu=.1, psi=0.05, rho=1)
+second.ratio <- hisse:::q_sym_tilde(t=12, lambda=.2, mu=.1, psi=0.05, rho=1)/ 
+      hisse:::q_t(t=12,lambda=.2, mu=.1, psi=0.05, rho=1)
+stad.unobs <- 1 - (first.ratio * second.ratio)
+stad.2 <- stad.unobs * hisse:::q_ratio(12,10,lambda=.2, mu=.1, psi=0.05, rho=1)* stad.1
+```
+
+Finally, we can perform the same calculation using an ordinary differential equation in MiSSE, by first integrating along the interval [0,10] using the standard branch calculation, and then using these values are the starting conditions to integrate along the intervening interval. We will then compare to the probability from the analytical calculation:
+```{r, eval=TRUE}
+# Now do it using ODE from MiSSE:
+rho = 1
+turnover = .2 + .1
+eps = .1 / .2
+psi = 0.05
+model.vec <- c(turnover, eps, rep(0,51))
+cache <- hisse:::ParametersToPassMiSSE(model.vec=model.vec, hidden.states=1, 
+      fixed.eps=NULL, nb.tip=1, nb.node=1, bad.likelihood=exp(-300), ode.eps=0)
+cache$psi <- psi
+strat.range.calc <- hisse:::SingleChildProbMiSSE(cache, pars, compD, compE,  
+      0, 10, 3)
+strat.intervene.calc <- hisse:::SingleChildProbMiSSE(cache, pars, 
+        strat.range.calc[27:52], strat.range.calc[1:26], 10, 12, 4)
+
+comparison <- identical(round(unname(strat.intervene.calc[27]),4), 
+        round(stad.2,4))
+print(comparison)
+```
+
+
 
 ## References
 
 Caetano D.S., O'Meara B.C., Beaulieu J.M. 2018. Hidden state models improve state-dependent diversification approaches, including biogeographic models. Evolution, 72:2308-2324.
 
+Stadler T., Gavryushkina A., Warnock R.C.M., Drummond A.J., Heath T.A. 2018. The fossilized birth-death model for analysis of stratigraphic range data under different speciation modes. Journal of Theoretical Biology 447:41-55.
 
 
