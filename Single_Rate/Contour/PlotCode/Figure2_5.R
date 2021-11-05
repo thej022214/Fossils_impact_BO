@@ -367,9 +367,9 @@ userID  <-  Sys.info()['user']
 #set dirs based on userID
 switch(userID,
 "jeremybeaulieu" = { # assume run from dir selon_work/
-    contour.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/Single_Rate/Contour/Surfaces/";
-    quick.sim.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/Single_Rate/Contour/QuickStratSim/";
-    out.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/Tables_Figures/";},
+    contour.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/Single_Rate/Contour/Surfaces/";
+    quick.sim.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/Single_Rate/Contour/QuickStratSim/";
+    out.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/Tables_Figures/";},
 )
 
 pdf(paste0(out.dir, "Figure2.pdf"), width=12, height=8)
@@ -397,8 +397,8 @@ k.samples <- rbind(k.samples, k.samples.tmp)
 ###################################################
 
 plot(ladderize(phy), show.tip.label=FALSE, edge.width=0.75)
-AddFossilPoints(f=extinct.samples, ladderize(phy), pch=19, cex=0.8, col="#0D79F2")
-AddFossilPoints(f=k.samples, ladderize(phy), pch=19, cex=0.8, col="#F25E0D")
+AddFossilPoints(ladderize(phy), f=extinct.samples, pch=19, cex=0.8, col="#0D79F2")
+AddFossilPoints(ladderize(phy), f=k.samples, pch=19, cex=0.8, col="#F25E0D")
 ##legend("bottomleft", c(expression(italic(k)~fossils==11), expression(italic(m)~fossils==10)), pch=c(19,19), col=c("darkorange", "blue"), title=expression(Generating~psi==0.01))
 legend("bottomleft", c(expression(italic(k)~fossils==107), expression(italic(m)~fossils==73)), pch=c(19,19), col=c("#F25E0D", "#0D79F2"), title=expression(Generating~psi==0.10))
 mtext("d)",side=3, line=0, adj=0, cex=1)

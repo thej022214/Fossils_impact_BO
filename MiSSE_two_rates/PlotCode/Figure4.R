@@ -11,13 +11,13 @@ userID  <-  Sys.info()['user']
 #set dirs based on userID
 switch(userID,
 "jeremybeaulieu" = { # assume run from dir selon_work/
-    out.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/Tables_Figures/";
-    out2.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/MiSSE_two_rates/Bias_CV_xls/";
-    scen4.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/MiSSE_two_rates/Scenario4_FINAL/";},
+    out.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/Tables_Figures/";
+    out2.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/MiSSE_two_rates/Bias_CV_xls/";
+    scen4.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/MiSSE_two_rates/Scenario4_FINAL/";},
 "jmbeauli" = { # assume run from dir selon_work/
-    out.dir <- "/Users/jmbeauli/hisse_fossil_sims/Tables_Figures/";
-    out2.dir <- "/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Bias_CV/";
-    scen4.dir <- "/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Scenario1_FINAL/200_taxa/scenario1.200.";},
+    out.dir <- "/Users/jmbeauli/Fossils_impact_BO/Tables_Figures/";
+    out2.dir <- "/Users/jmbeauli/Fossils_impact_BO/Two_Rate/Bias_CV/";
+    scen4.dir <- "/Users/jmbeauli/Fossils_impact_BO/Two_Rate/Scenario1_FINAL/200_taxa/scenario1.200.";},
 )
 
 
@@ -176,8 +176,6 @@ mtext("a)",side=3, line=0, adj=0, cex=1.5)
 ######################################################################################################################################
 ######################################################################################################################################
 
-#setwd("/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Scenario4_new")
-#setwd("/Users/jeremybeaulieu/hisse_fossil_sims/Two_Rate/Scenario4_FINAL/200_taxa")
 turnover <- c(0.3, 0.6, 1.5, 1.0)
 eps <- c(0.7, 0.9, 0.95, 0.8)
 transition <- 0.1*matrix(c(NA, 0.5, 0.2, 0.6, 0.1, NA, 0.3, 0.2, 0.1, 0.4, NA, 0.8, 0.1, 0.2, 0.3, NA),nrow=4)
@@ -247,7 +245,7 @@ GetSError <- function(data){
 
 setwd(scen4.dir)
 files.fullset <- list.files(pattern="Rsave")
-true.psi <- "01"
+true.psi <- "1"
 keep <- c()
 for(file.index in 1:length(files.fullset)){
     tmp <- strsplit(files.fullset[file.index], "[.]")
@@ -256,6 +254,7 @@ for(file.index in 1:length(files.fullset)){
     }
 }
 files <- files.fullset[keep]
+
 
 all_results_full <- data.frame()
 all_results <- data.frame()
@@ -314,13 +313,10 @@ pairwise_summaries$median.turnover.difference <- as.numeric(pairwise_summaries$m
 pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pairwise_summaries$fraction.turnover.difference.actual.positive)
 
 #ss <- boxplot(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, plot=FALSE)
-print("extant_0.01")
 #print(ss$stat)
 extant_01 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 extant_01_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
-print(extant_01)
-print(extant_01_med)
 
 pairwise_summaries_full <- pairwise_summaries
 
@@ -391,9 +387,6 @@ full_k_0.01 <- setNames(aggregate(pairwise_summaries$fraction.turnover.differenc
 
 full_k_0.01_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
-print(full_k_0.01)
-print(full_k_0.01_med)
-
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
 
@@ -460,9 +453,6 @@ pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pa
 #print(ss$stat)
 half_k_0.01 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 half_k_0.01_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
-
-print(half_k_0.01)
-print(half_k_0.01_med)
 
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
@@ -531,9 +521,6 @@ pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pa
 zero_k_0.01 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 zero_k_0.01_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
-
-print(zero_k_0.01)
-print(zero_k_0.01_med)
 
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
@@ -604,9 +591,6 @@ pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pa
 strat_int_0.1 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 strat_int_0.1_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
-print(strat_int_0.1 )
-print(strat_int_0.1)
-
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
 
@@ -620,7 +604,7 @@ axis(2, at = seq(0, 2.5, by = .5), las=1, lwd=1, cex.axis=1, labels=TRUE, mgp=c(
 axis(1, at = c(3, 9, 15, 21), las=1, lwd=1, cex.axis=1, labels=c(0.3, 0.6, 1.0, 1.5), mgp=c(.75,.5,0))
 title(ylab=expression(Estimated~hat(tau)), line=2.5, cex=2)
 title(xlab=expression(True~tau), line=2.5)
-legend("topleft", c("Extant only", "Stratigraphic intervals", "All fossils used", expression(Half~of~italic(k)~fossils~used), expression(Only~italic(m)~fossils~used)), fill=col.vec, box.col=0)
+legend("topleft", c("Extant only", "Stratigraphic ranges", "All fossils used", expression(Half~of~italic(k)~fossils~used), expression(Only~italic(m)~fossils~used)), fill=col.vec, box.col=0)
 mtext("b)",side=3, line=0, adj=0, cex=1.5)
 
 
@@ -791,9 +775,6 @@ full_k_0.1 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference
 full_k_0.1_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
 
-print(full_k_0.1)
-print(full_k_0.1_med)
-
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
 
@@ -862,10 +843,6 @@ pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pa
 half_k_0.1 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 half_k_0.1_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
-print(half_k_0.1)
-print(half_k_0.1_med)
-
-
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
 ######################################################################################################################################
@@ -933,9 +910,6 @@ pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pa
 
 zero_k_0.1 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 zero_k_0.1_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
-
-print(zero_k_0.1)
-print(zero_k_0.1_med)
 
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
@@ -1006,9 +980,6 @@ pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pa
 strat_int_0.1 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
 strat_int_0.1_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
 
-print(strat_int_0.1 )
-print(strat_int_0.1)
-
 pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
 
 boxplot(all_results_full$turnover~all_results_full$misse*all_results_full$turnover.true, col=col.vec, axes=FALSE, xlab="", ylim=c(0,2.5), ylab="", main=expression(psi==0.10), at=c(1,2,3,4,5, 7,8,9,10,11, 13,14,15,16,17, 19,20,21,22,23), outline=FALSE)
@@ -1025,3 +996,290 @@ mtext("c)",side=3, line=0, adj=0, cex=1.5)
 
 dev.off()
 
+
+
+
+
+
+######################################################################################################################################
+######################################################################################################################################
+### Full K sampling -- Psi = 0.05. Not shown in plot
+######################################################################################################################################
+######################################################################################################################################
+files.fullset <- list.files(pattern="Rsave")
+true.psi <- "05"
+keep <- c()
+for(file.index in 1:length(files.fullset)){
+    tmp <- strsplit(files.fullset[file.index], "[.]")
+    if(tmp[[1]][4] == true.psi){
+        keep <- c(keep, file.index)
+    }
+}
+files <- files.fullset[keep]
+
+all_results <- data.frame()
+all_freqs <- data.frame()
+for(i in seq_along(files)) {
+    try(rm(misse.mk.full.tip))
+    try(rm(true.tip.rates))
+    load(files[i])
+    if(!is.null(misse.mk.full.tip)) {
+        true.tip.rates.extant <- true.tip.rates[names(true.tip.rates) %in% misse.mk.full.tip$taxon]
+        misse.mk.full.tip$turnover.true <- turnover[1+unname(true.tip.rates[misse.mk.full.tip$taxon])]
+        misse.mk.full.tip$eps.true <- eps[1+unname(true.tip.rates[misse.mk.full.tip$taxon])]
+        misse.mk.full.tip$state.true <- true.tip.rates[misse.mk.full.tip$taxon]
+        misse.mk.full.tip$file.index <- i
+        misse.mk.full.tip$file.name <- files[i]
+        all_results <- rbind(all_results, misse.mk.full.tip[1:200,])
+        all_freqs <- rbind(all_freqs, table(true.tip.rates.extant))
+    }
+}
+all_results$true_minus_est_eps <- all_results$eps.true-all_results$extinct.frac
+all_results$true_minus_est_turnover <- all_results$turnover.true-all_results$turnover
+all_results$misse <- "full_k"
+all_results_full <- rbind(all_results_full, all_results)
+
+pairwise_summaries <- data.frame(matrix(nrow=0, ncol=8))
+colnames(pairwise_summaries) <- c("file.index", "turnover.pairing", "median.turnover.actual", "fraction.turnover.difference.actual.positive", "number.comparisons", "median.turnover.difference", "ci.25.turnover.difference", "ci.75.turnover.difference")
+for (index in sequence(max(all_results$file.index))) {
+    print(paste(index, " of ", max(all_results$file.index)))
+    f1 <- subset(all_results, file.index==index)
+    distmat.turnover <- outer (f1$turnover, f1$turnover, `-`)
+    distmat.turnover.compare_true <- outer (f1$turnover.true, f1$turnover.true, `paste`)
+    delta.turnover.actual <- list()
+    for (difference.index in sequence(length(compare_values.list))) {
+        if(difference.index == 1){
+            actual_turn <- c()
+            for(compare.index in sequence(length(compare_values.list[[difference.index]]))){
+                actual_turn <- c(actual_turn, as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])]))
+            }
+            compare_values_it <- compare_values.list[[difference.index]][1]
+        }
+        else{
+            compare.index = 2
+            compare_values_it <- compare_values.list[[difference.index]][1]
+            actual_turn <- as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])])
+        }
+        delta.turnover.actual[[difference.index]] <- actual_turn
+        pairwise_summaries[nrow(pairwise_summaries)+1,] <- c(index, compare_values.list[[difference.index]][2], median(f1$turnover), sum(actual_turn>0)/length(actual_turn), length(actual_turn), median(actual_turn), quantile(actual_turn, 0.25),quantile(actual_turn, 0.75))
+    }
+}
+
+pairwise_summaries$misse <- "full_k"
+pairwise_summaries$true_difference_turnover <- LoopActualDifference(pairwise_summaries$turnover.pairing)
+pairwise_summaries$median.turnover.difference <- as.numeric(pairwise_summaries$median.turnover.difference)
+pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pairwise_summaries$fraction.turnover.difference.actual.positive)
+
+#ss <- boxplot(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, plot=FALSE)
+#print(ss$stat)
+
+full_k_0.05 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
+full_k_0.05_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
+
+
+pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
+
+
+######################################################################################################################################
+######################################################################################################################################
+### Half K sampling -- ROW 3
+######################################################################################################################################
+######################################################################################################################################
+
+all_results <- data.frame()
+all_freqs <- data.frame()
+for(i in seq_along(files)) {
+    try(rm(misse.mk.missinghalf.tip))
+    try(rm(true.tip.rates))
+    load(files[i])
+    if(!is.null(misse.mk.missinghalf.tip)) {
+        true.tip.rates.extant <- true.tip.rates[names(true.tip.rates) %in% misse.mk.missinghalf.tip$taxon]
+        misse.mk.missinghalf.tip$turnover.true <- turnover[1+unname(true.tip.rates[misse.mk.missinghalf.tip$taxon])]
+        misse.mk.missinghalf.tip$eps.true <- eps[1+unname(true.tip.rates[misse.mk.missinghalf.tip$taxon])]
+        misse.mk.missinghalf.tip$state.true <- true.tip.rates[misse.mk.missinghalf.tip$taxon]
+        misse.mk.missinghalf.tip$file.index <- i
+        misse.mk.missinghalf.tip$file.name <- files[i]
+        all_results <- rbind(all_results, misse.mk.missinghalf.tip[1:200,])
+        all_freqs <- rbind(all_freqs, table(true.tip.rates.extant))
+    }
+}
+all_results$true_minus_est_eps <- all_results$eps.true-all_results$extinct.frac
+all_results$true_minus_est_turnover <- all_results$turnover.true-all_results$turnover
+all_results$misse <- "half_k"
+all_results_full <- rbind(all_results_full, all_results)
+
+pairwise_summaries <- data.frame(matrix(nrow=0, ncol=8))
+colnames(pairwise_summaries) <- c("file.index", "turnover.pairing", "median.turnover.actual", "fraction.turnover.difference.actual.positive", "number.comparisons", "median.turnover.difference", "ci.25.turnover.difference", "ci.75.turnover.difference")
+for (index in sequence(max(all_results$file.index))) {
+    print(paste(index, " of ", max(all_results$file.index)))
+    f1 <- subset(all_results, file.index==index)
+    distmat.turnover <- outer (f1$turnover, f1$turnover, `-`)
+    distmat.turnover.compare_true <- outer (f1$turnover.true, f1$turnover.true, `paste`)
+    delta.turnover.actual <- list()
+    for (difference.index in sequence(length(compare_values.list))) {
+        if(difference.index == 1){
+            actual_turn <- c()
+            for(compare.index in sequence(length(compare_values.list[[difference.index]]))){
+                actual_turn <- c(actual_turn, as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])]))
+            }
+            compare_values_it <- compare_values.list[[difference.index]][1]
+        }
+        else{
+            compare.index = 2
+            compare_values_it <- compare_values.list[[difference.index]][1]
+            actual_turn <- as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])])
+        }
+        delta.turnover.actual[[difference.index]] <- actual_turn
+        pairwise_summaries[nrow(pairwise_summaries)+1,] <- c(index, compare_values.list[[difference.index]][2], median(f1$turnover), sum(actual_turn>0)/length(actual_turn), length(actual_turn), median(actual_turn), quantile(actual_turn, 0.25),quantile(actual_turn, 0.75))
+    }
+}
+
+pairwise_summaries$misse <- "half_k"
+pairwise_summaries$true_difference_turnover <- LoopActualDifference(pairwise_summaries$turnover.pairing)
+pairwise_summaries$median.turnover.difference <- as.numeric(pairwise_summaries$median.turnover.difference)
+pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pairwise_summaries$fraction.turnover.difference.actual.positive)
+
+#ss <- boxplot(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, plot=FALSE)
+
+#print(ss$stat)
+half_k_0.05 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
+half_k_0.05_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
+
+pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
+
+######################################################################################################################################
+######################################################################################################################################
+### No K sampling -- ROW 3
+######################################################################################################################################
+######################################################################################################################################
+
+all_results <- data.frame()
+all_freqs <- data.frame()
+for(i in seq_along(files)) {
+    try(rm(misse.zero_k.tip))
+    try(rm(true.tip.rates))
+    load(files[i])
+    if(!is.null(misse.zero_k.tip)) {
+        true.tip.rates.extant <- true.tip.rates[names(true.tip.rates) %in% misse.zero_k.tip$taxon]
+        misse.zero_k.tip$turnover.true <- turnover[1+unname(true.tip.rates[misse.zero_k.tip$taxon])]
+        misse.zero_k.tip$eps.true <- eps[1+unname(true.tip.rates[misse.zero_k.tip$taxon])]
+        misse.zero_k.tip$state.true <- true.tip.rates[misse.zero_k.tip$taxon]
+        misse.zero_k.tip$file.index <- i
+        misse.zero_k.tip$file.name <- files[i]
+        all_results <- rbind(all_results, misse.zero_k.tip[1:200,])
+        all_freqs <- rbind(all_freqs, table(true.tip.rates.extant))
+    }
+}
+all_results$true_minus_est_eps <- all_results$eps.true-all_results$extinct.frac
+all_results$true_minus_est_turnover <- all_results$turnover.true-all_results$turnover
+all_results$misse <- "zero_k"
+all_results_full <- rbind(all_results_full, all_results)
+
+
+pairwise_summaries <- data.frame(matrix(nrow=0, ncol=8))
+colnames(pairwise_summaries) <- c("file.index", "turnover.pairing", "median.turnover.actual", "fraction.turnover.difference.actual.positive", "number.comparisons", "median.turnover.difference", "ci.25.turnover.difference", "ci.75.turnover.difference")
+for (index in sequence(max(all_results$file.index))) {
+    print(paste(index, " of ", max(all_results$file.index)))
+    f1 <- subset(all_results, file.index==index)
+    distmat.turnover <- outer (f1$turnover, f1$turnover, `-`)
+    distmat.turnover.compare_true <- outer (f1$turnover.true, f1$turnover.true, `paste`)
+    delta.turnover.actual <- list()
+    for (difference.index in sequence(length(compare_values.list))) {
+        if(difference.index == 1){
+            actual_turn <- c()
+            for(compare.index in sequence(length(compare_values.list[[difference.index]]))){
+                actual_turn <- c(actual_turn, as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])]))
+            }
+            compare_values_it <- compare_values.list[[difference.index]][1]
+        }
+        else{
+            compare.index = 2
+            compare_values_it <- compare_values.list[[difference.index]][1]
+            actual_turn <- as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])])
+        }
+        delta.turnover.actual[[difference.index]] <- actual_turn
+        pairwise_summaries[nrow(pairwise_summaries)+1,] <- c(index, compare_values.list[[difference.index]][2], median(f1$turnover), sum(actual_turn>0)/length(actual_turn), length(actual_turn), median(actual_turn), quantile(actual_turn, 0.25),quantile(actual_turn, 0.75))
+    }
+}
+
+pairwise_summaries$misse <- "zero_k"
+pairwise_summaries$true_difference_turnover <- LoopActualDifference(pairwise_summaries$turnover.pairing)
+pairwise_summaries$median.turnover.difference <- as.numeric(pairwise_summaries$median.turnover.difference)
+pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pairwise_summaries$fraction.turnover.difference.actual.positive)
+
+#ss <- boxplot(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, plot=FALSE)
+#print(ss$stat)
+
+zero_k_0.05 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
+zero_k_0.05_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
+
+pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)
+
+
+######################################################################################################################################
+######################################################################################################################################
+### Strat Intervals -- ROW 3
+######################################################################################################################################
+######################################################################################################################################
+
+all_results <- data.frame()
+all_freqs <- data.frame()
+for(i in seq_along(files)) {
+    try(rm(misse.mk.strat.tip))
+    try(rm(true.tip.rates))
+    load(files[i])
+    if(!is.null(misse.mk.strat.tip)) {
+        true.tip.rates.extant <- true.tip.rates[names(true.tip.rates) %in% misse.mk.strat.tip$taxon]
+        misse.mk.strat.tip$turnover.true <- turnover[1+unname(true.tip.rates[misse.mk.strat.tip$taxon])]
+        misse.mk.strat.tip$eps.true <- eps[1+unname(true.tip.rates[misse.mk.strat.tip$taxon])]
+        misse.mk.strat.tip$state.true <- true.tip.rates[misse.mk.strat.tip$taxon]
+        misse.mk.strat.tip$file.index <- i
+        misse.mk.strat.tip$file.name <- files[i]
+        all_results <- rbind(all_results, misse.mk.strat.tip[1:200,])
+        all_freqs <- rbind(all_freqs, table(true.tip.rates.extant))
+    }
+}
+all_results$true_minus_est_eps <- all_results$eps.true-all_results$extinct.frac
+all_results$true_minus_est_turnover <- all_results$turnover.true-all_results$turnover
+all_results$misse <- "fstrat_int"
+all_results_full <- rbind(all_results_full, all_results)
+
+
+pairwise_summaries <- data.frame(matrix(nrow=0, ncol=8))
+colnames(pairwise_summaries) <- c("file.index", "turnover.pairing", "median.turnover.actual", "fraction.turnover.difference.actual.positive", "number.comparisons", "median.turnover.difference", "ci.25.turnover.difference", "ci.75.turnover.difference")
+for (index in sequence(max(all_results$file.index))) {
+    print(paste(index, " of ", max(all_results$file.index)))
+    f1 <- subset(all_results, file.index==index)
+    distmat.turnover <- outer (f1$turnover, f1$turnover, `-`)
+    distmat.turnover.compare_true <- outer (f1$turnover.true, f1$turnover.true, `paste`)
+    delta.turnover.actual <- list()
+    for (difference.index in sequence(length(compare_values.list))) {
+        if(difference.index == 1){
+            actual_turn <- c()
+            for(compare.index in sequence(length(compare_values.list[[difference.index]]))){
+                actual_turn <- c(actual_turn, as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])]))
+            }
+            compare_values_it <- compare_values.list[[difference.index]][1]
+        }
+        else{
+            compare.index = 2
+            compare_values_it <- compare_values.list[[difference.index]][1]
+            actual_turn <- as.numeric(distmat.turnover[which(distmat.turnover.compare_true==compare_values.list[[difference.index]][compare.index])])
+        }
+        delta.turnover.actual[[difference.index]] <- actual_turn
+        pairwise_summaries[nrow(pairwise_summaries)+1,] <- c(index, compare_values.list[[difference.index]][2], median(f1$turnover), sum(actual_turn>0)/length(actual_turn), length(actual_turn), median(actual_turn), quantile(actual_turn, 0.25),quantile(actual_turn, 0.75))
+    }
+}
+
+pairwise_summaries$misse <- "fstrat_int"
+pairwise_summaries$true_difference_turnover <- LoopActualDifference(pairwise_summaries$turnover.pairing)
+pairwise_summaries$median.turnover.difference <- as.numeric(pairwise_summaries$median.turnover.difference)
+pairwise_summaries$fraction.turnover.difference.actual.positive <- as.numeric(pairwise_summaries$fraction.turnover.difference.actual.positive)
+
+#ss <- boxplot(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, plot=FALSE)
+#print(ss$stat)
+
+strat_int_0.05 <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="GetSError"), c("Diff", "<50%"))
+strat_int_0.05_med <- setNames(aggregate(pairwise_summaries$fraction.turnover.difference.actual.positive~pairwise_summaries$true_difference_turnover, FUN="median"), c("Diff", "Median"))
+
+pairwise_summaries_full <- rbind(pairwise_summaries_full, pairwise_summaries)

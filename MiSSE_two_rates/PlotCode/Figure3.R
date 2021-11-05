@@ -11,17 +11,17 @@ userID  <-  Sys.info()['user']
 #set dirs based on userID
 switch(userID,
 "jeremybeaulieu" = { # assume run from dir selon_work/
-    out.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/Tables_Figures/";
-    out2.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/MiSSE_two_rates/Bias_CV_xls/";
-    scen1.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/MiSSE_two_rates/Scenario1_FINAL/scenario1.200.";
-    scen2.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/MiSSE_two_rates/Scenario2_FINAL/scenario2.200.";
-    scen3.dir <- "/Users/jeremybeaulieu/hisse_fossil_sims/MiSSE_two_rates/Scenario3_FINAL/scenario3.200.";},
+    out.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/Tables_Figures/";
+    out2.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/MiSSE_two_rates/Bias_CV_xls/";
+    scen1.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/MiSSE_two_rates/Scenario1_FINAL/scenario1.200.";
+    scen2.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/MiSSE_two_rates/Scenario2_FINAL/scenario2.200.";
+    scen3.dir <- "/Users/jeremybeaulieu/Fossils_impact_BO/MiSSE_two_rates/Scenario3_FINAL/scenario3.200.";},
 "jmbeauli" = { # assume run from dir selon_work/
-    out.dir <- "/Users/jmbeauli/hisse_fossil_sims/Tables_Figures/";
-    out2.dir <- "/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Bias_CV/";
-    scen1.dir <- "/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Scenario1_FINAL/200_taxa/scenario1.200.";
-    scen2.dir <- "/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Scenario2_FINAL/200_taxa/scenario2.200.";
-    scen3.dir <- "/Users/jmbeauli/hisse_fossil_sims/Two_Rate/Scenario3_FINAL/200_taxa/scenario3.200.";},
+    out.dir <- "/Users/jmbeauli/Fossils_impact_BO/Tables_Figures/";
+    out2.dir <- "/Users/jmbeauli/Fossils_impact_BO/Two_Rate/Bias_CV/";
+    scen1.dir <- "/Users/jmbeauli/Fossils_impact_BO/Two_Rate/Scenario1_FINAL/200_taxa/scenario1.200.";
+    scen2.dir <- "/Users/jmbeauli/Fossils_impact_BO/Two_Rate/Scenario2_FINAL/200_taxa/scenario2.200.";
+    scen3.dir <- "/Users/jmbeauli/Fossils_impact_BO/Two_Rate/Scenario3_FINAL/200_taxa/scenario3.200.";},
 )
 
 ######################################################################################################################################
@@ -173,7 +173,7 @@ axis(2, at = seq(0, 2, by = .5), las=1, lwd=1, cex.axis=1, labels=TRUE, mgp=c(.7
 axis(1, at = c(3, 9, 15, 21, 27, 33), las=1, lwd=1, cex.axis=1, labels=c(expression(tau[A]), expression(tau[B]), expression(epsilon[A]), expression(epsilon[B]), expression(r[A]), expression(r[B])), mgp=c(.75,.5,0))
 title(ylab="Scenario 1", line=2.5, cex=2)
 #title(xlab="Parameter", line=2.5)
-legend("topleft", c("Extant only", "Stratigraphic intervals", "All fossils used", expression(Half~of~italic(k)~fossils~used), expression(Only~italic(m)~fossils~used)), fill=col.vec, box.col=0)
+legend("topleft", c("Extant only", "Stratigraphic ranges", "All fossils used", expression(Half~of~italic(k)~fossils~used), expression(Only~italic(m)~fossils~used)), fill=col.vec, box.col=0)
 mtext("a)",side=3, line=0, adj=0, cex=1.5)
 
 par(new=TRUE)
