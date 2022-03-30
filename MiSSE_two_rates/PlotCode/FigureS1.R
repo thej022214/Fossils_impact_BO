@@ -116,7 +116,7 @@ write.csv(results_summary, file=file.name)
 ######################################################################################################################################
 
 
-pdf(paste0(out.dir, "Figure3.pdf"), width=12, height=12)
+pdf(paste0(out.dir, "FigureS1.pdf"), width=12, height=12)
 layout(matrix(c(1:9), nrow=3, byrow=TRUE))
 
 tmp <- results[results$true.psi == 0.01 & results$misse == "extant",]
